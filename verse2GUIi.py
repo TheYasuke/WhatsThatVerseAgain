@@ -136,8 +136,8 @@ class Ui_Dialog(object):
             self.verseStackedWidget.setCurrentIndex(1)
             self.deepSearchButton.setText(_translate("Dialog", "Deep Search"))
             self.deepSearchButton.setEnabled(True)
-
-            if type(WhatsThatVerseApp.main(self.verse,self.version,self.results,self.pages)) is dict:
+            verseApp= WhatsThatVerseApp.main(self.verse,self.version,self.results,self.pages)
+            if type(verseApp) is dict:
                 #print(WhatsThatVerseApp.passageDict)
                 if not WhatsThatVerseApp.bibleDict:
                     self.resultLabel.setText(_translate("Dialog", "No Results:"))
@@ -151,21 +151,15 @@ class Ui_Dialog(object):
                 self.resultLabel.setText(_translate("Dialog", "{} Results:".format(len(WhatsThatVerseApp.passageDict))))
                 self.resultBox.moveCursor(QtGui.QTextCursor.Start)
             
-            else:#If invalid version or phrase isnt found
+            elif type(verseApp) is bool:#If invalid version or phrase isnt found
                 self.resultLabel.setText(_translate("Dialog", "No Results:"))
                 self.resultBox.append("Please check the Bible version.")
                 self.deepSearchButton.setEnabled(False)
-            '''
-                self.resultLabel.setText(_translate("Dialog", "No Results:"))
-                if WhatsThatVerseApp.bibleDict:
-                    self.resultBox.append("Please check the Bible version.")
-                    self.deepSearchButton.setEnabled(False)
-                else:
-                    print("test")
-                    print(WhatsThatVerseApp.bibleDict)
-                    self.resultBox.append("Maybe try a Deep Search?")
-                #Disable deep searach if bad version, else ask for deep search
-            '''
+            else:
+                self.resultLabel.setText(_translate("Dialog", "Connection Error"))
+                self.resultBox.append(verseApp)
+                self.deepSearchButton.setEnabled(False)
+
     def showSearch(self): 
         self.verseStackedWidget.setCurrentIndex(0)
         self.verseEnter.clear()
@@ -200,7 +194,7 @@ class Ui_Dialog(object):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    app.setWindowIcon(QtGui.QIcon('cross2.png'))
+    app.setWindowIcon(QtGui.QIcon('cross.ico'))
     Dialog = QtWidgets.QDialog()
     ui = Ui_Dialog()
     ui.setupUi(Dialog)

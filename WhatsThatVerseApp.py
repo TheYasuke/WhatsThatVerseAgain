@@ -18,12 +18,12 @@
 '''
 
 '''
-    Todo: remove multiple instances of same verse  "2 Peter 3:9 and 2 Pet. 3:9"
+    Todo: remove multiple instances of same verse  "2 Peter 3:9 and 2 Pet. 3:9" (like if definition is same, take longer verse)
     Todo: seaching... dialog
     Todo: optomize speed
     Todo: add verse compare
     Todo: number results
-    Todo: Allow deep search on empty result
+    Todo: search history
     Todo: 
 '''
 import requests, re, itertools
@@ -43,21 +43,24 @@ passageDict = {}
 
 def main(phrase,version,aResults,aPages):
         
-        webSearch(phrase, aResults, aPages, bibleDict )        
+    try:
+        webSearch(phrase, aResults, aPages, bibleDict)
+    except:        
+        return "No connection. Please check your connection."
 
-        verzBool = bibleSearch(version) 
-        print (bibleDict)
-        if type(verzBool) is bool:
-            return False
-        
-        return passageDict
-        
+    verzBool = bibleSearch(version) 
+    
+    if type(verzBool) is bool:
+        return False
+    
+    return passageDict
+    
 
 def bibleSearch(myVersion):
 
     #1 Order items in dictionary by most occurences to least based on value
     searchDict = (dict(sorted(bibleDict.items(), key=lambda x: x[1], reverse=True)))
-
+    #print (searchDict)
     #2 '''This and the "if not bibleDict" line below is added because it will not return False unless the version is first evaluated before the bibleDict. The only way to do this was to pretend that there was content, check to see if the version was bad, and then really check if there was content in the dictionary. shrewd tactic but it works til a better solution is found'''
 
     if not searchDict:   #the only reason i want this to continue is for the "if error" statement below
@@ -107,7 +110,7 @@ def webSearch(myPhrase,myResults, myPages,myDict):
     searchPhrase = '+'.join(myPhrase.split())
     URL="https://www.google.com/search?q=%s+scripture&num=%d" % (searchPhrase, myResults)
     URL2 ="https://www.ecosia.org/search?q=%s+scripture&p=%d" % (searchPhrase, myPages)
-
+    
     page = requests.get(URL, headers=headers)
     page2= requests.get(URL2, headers=headers)
     page3=""
